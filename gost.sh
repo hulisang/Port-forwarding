@@ -178,9 +178,8 @@ ADDCILENT_ct(){
     
 echo && echo -e "  gost 一键管理脚本 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix}
   --------gost tunnel---------
-  ---- 安装程序基于fiisi  ----
-  ---- CLIENT BY sncat    ----
-  ---- 2020/3/22 -------------
+  ---- 安装程序基于fiisi  -----
+  -------- 2020/3/22 ---------
   
  ${Green_font_prefix}1.${Font_color_suffix} 安装 gost
  ${Green_font_prefix}2.${Font_color_suffix} 卸载 gost
