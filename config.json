@@ -1,0 +1,7 @@
+{
+    "Debug": true,
+    "Retries": 0,
+    "ServeNodes": [
+           "https://admin:password@0.0.0.0:44444"
+                             ]
+}
