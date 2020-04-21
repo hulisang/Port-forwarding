@@ -34,16 +34,16 @@ fi
 }
 
 installbefore(){
-echo -n "请问需要设置多少个入口？"
+echo -n "请问需要设置多少个本地监听端口？"
 read allinstallbeforenum
 installbeforenum=1
 while test "$installbeforenum" -le "$allinstallbeforenum"
 do
-echo -n "入口端口："
+echo -n "本地监听端口："
 read inport
-echo -n "目的地ip："
+echo -n "目的地ip（需要被转发ip）："
 read ipother
-echo -n "目的地端口："
+echo -n "需要被转发端口（通常为ssr端口）："
 read portother
 if test "$installbeforenum" -eq "$allinstallbeforenum";then
 if test $protocol = "relay+tls";then
@@ -61,9 +61,9 @@ done
 }
 
 installafter(){
-echo -n "隧道出口ip："
+echo -n "隧道ip（国外ip）："
 read outip
-echo -n "隧道出口端口："
+echo -n "隧道出口端口（通信端口）："
 read outport
 echo -n "隧道出口账户："
 read outaccount
@@ -73,7 +73,7 @@ read outpassword
 
 outinstallafter(){
 outip="0.0.0.0"
-echo -n "隧道出口端口："
+echo -n "隧道出口端口（通信端口）："
 read outport
 echo -n "隧道出口账户："
 read outaccount
@@ -317,7 +317,7 @@ Restart_ct(){
              echo "已重启" 
 }
     
-echo && echo -e "  gost 一键安装脚本 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix} 更新日期2020/3/13
+echo && echo -e "  gost 一键安装脚本 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix} 更新日期2020/4/21
   ---- ------------------------------ ----
   
  ${Green_font_prefix}1.${Font_color_suffix} 安装 gost
