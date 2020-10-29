@@ -92,7 +92,7 @@ LemonBench() {
 # credit: https://www.oldking.net/350.html
 Oldking() {
   ${sudoCmd} ${systemPackage} install wget -y -qq
-  wget -qO- https://git.io/Jvh0J | ${sudoCmd} bash
+  wget https://raw.githubusercontent.com/oooldking/script/master/superspeed.sh && chmod +x superspeed.sh && ./superspeed.sh
 }
 
 menu() {
