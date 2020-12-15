@@ -15,5 +15,6 @@ wget https://raw.githubusercontent.com/hulisang/Port-forwarding/master/gost.sh &
 wget https://raw.githubusercontent.com/hulisang/Port-forwarding/master/gost_dev.sh && chmod +x gost_dev.sh && bash gost_dev.sh
 
 
-##install docker and docker-compose(dc)
+## install docker and docker-compose(dc)
+
 wget https://raw.githubusercontent.com/hulisang/Port-forwarding/master/install-docker.sh && chmod +x install-docker.sh && bash install-docker.sh
