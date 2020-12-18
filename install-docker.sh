@@ -21,3 +21,5 @@ curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-compo
 chmod a+x /usr/local/bin/docker-compose
 rm -rf `which dc`
 ln -s /usr/local/bin/docker-compose /usr/bin/dc
+systemctl start docker.service
+systemctl enable docker.service
