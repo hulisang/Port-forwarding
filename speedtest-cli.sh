@@ -70,7 +70,7 @@ esac
 echo -e "${INFO} Architecture: ${OS_ARCH} ${PKGT}"
 
 echo -e "${INFO} Get ${PROJECT_NAME} download URL ..."
-DOWNLOAD_URL="https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-${FILE_KEYWORD}-linux.tgz"
+DOWNLOAD_URL="https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-${FILE_KEYWORD}.tgz"
 echo -e "${INFO} Download URL: ${DOWNLOAD_URL}"
 
 echo -e "${INFO} Installing ${PROJECT_NAME} ..."
