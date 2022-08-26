@@ -37,26 +37,37 @@ installbefore(){
 echo -n "请问需要设置多少个本地监听端口？"
 read allinstallbeforenum
 installbeforenum=1
+echo "{
+\"Debug\": true,
+\"Retries\": 0,
+\"Routes\": [" >> /tmp/gost_config.json
 while test "$installbeforenum" -le "$allinstallbeforenum"
 do
+check_protocol
 echo -n "本地监听端口："
 read inport
 echo -n "目的地ip（需要被转发ip）："
 read ipother
 echo -n "需要被转发端口（通常为ssr端口）："
 read portother
-if test "$installbeforenum" -eq "$allinstallbeforenum";then
+installafter
+echo "{
+\"ServeNodes\": [" >> /tmp/gost_config.json
 if test $protocol = "relay+tls";then
-echo "\""udp"://0.0.0.0:"$inport"/"$ipother":"$portother"\"," >> /etc/gost/config.json
+echo "\""udp"://0.0.0.0:"$inport"/"$ipother":"$portother"\"," >> /tmp/gost_config.json
 fi
-echo "\""tcp"://0.0.0.0:"$inport"/"$ipother":"$portother"\"" >> /etc/gost/config.json
-else
-if test $protocol = "relay+tls";then
-echo "\""udp"://0.0.0.0:"$inport"/"$ipother":"$portother"\"," >> /etc/gost/config.json
-fi
-echo "\""tcp"://0.0.0.0:"$inport"/"$ipother":"$portother"\"," >> /etc/gost/config.json
-fi
+echo "\""tcp"://0.0.0.0:"$inport"/"$ipother":"$portother"\"" >> /tmp/gost_config.json
+echo "],
+\"ChainNodes\": [" >> /tmp/gost_config.json
+installnom
 installbeforenum=$((++installbeforenum))
+if [ "$installbeforenum" -le "$allinstallbeforenum" ]; then
+hasdot=","
+else
+hasdot=
+fi
+echo "]
+}""$hasdot" >> /tmp/gost_config.json
 done
 }
 
@@ -82,24 +93,21 @@ read outpassword
 }
 
 installnom(){
-echo "\""$protocol"://"$outaccount":"$outpassword"@"$outip":"$outport""$tlsaddress"\"" >> /etc/gost/config.json
+echo "\""$protocol"://"$outaccount":"$outpassword"@"$outip":"$outport""$tlsaddress"\"" >> /tmp/gost_config.json
 }
 
 confstart(){
 echo "{
     \"Debug\": true,
     \"Retries\": 0,
-    \"ServeNodes\": [" >> /etc/gost/config.json
-}
-
-confhalf(){
-echo "    ],
-    \"ChainNodes\": [" >> /etc/gost/config.json
+    \"ServeNodes\": [" >> /tmp/gost_config.json
 }
 
 conflast(){
 echo "    ]
-}" >> /etc/gost/config.json
+}" >> /tmp/gost_config.json
+cat /tmp/gost_config.json | jq . > /etc/gost/config.json
+rm -f /tmp/gost_config.json
 }
 
 check_inorout(){
@@ -158,6 +166,7 @@ protocol=relay+tls
 ;;
 *)
 echo "$protocol is error"
+;;
 esac
 }
 
@@ -171,13 +180,8 @@ conflast
 }
 
 ininstall(){
-confstart
-check_protocol
 installbefore
-confhalf
 check_outtls
-installafter
-installnom
 conflast
 }
 
@@ -224,10 +228,10 @@ Installation_dependency(){
 	if [[ -z ${gzip_ver} ]]; then
 		if [[ ${release} == "centos" ]]; then
 			yum update
-			yum install -y gzip
+			yum install -y gzip jq
 		else
 			apt-get update
-			apt-get install -y gzip
+			apt-get install -y gzip jq
 		fi
 	fi
 }
