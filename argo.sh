@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # ============================================================
-# Argo Tunnel 独立管理脚本 v1.2
-# 命名简化：所有 argo-tunnel → argo
+# Argo Tunnel 独立管理脚本 v1.3
+# 默认使用 HTTP/2 协议（添加 --protocol http2）
 # ============================================================
 
 set -e
@@ -14,7 +14,7 @@ YELLOW='\033[33m'
 NC='\033[0m'
 
 # 路径变量
-WORK_DIR="/etc/argo"                    # 简化
+WORK_DIR="/etc/argo"
 SERVICE_FILE=""
 CF_BIN="$WORK_DIR/cloudflared"
 CONFIG_FILE="$WORK_DIR/config"
@@ -29,10 +29,10 @@ detect_system() {
         . /etc/os-release
         if [[ "$ID" == "alpine" ]]; then
             SYSTEM="alpine"
-            SERVICE_FILE="/etc/init.d/argo"          # 简化
+            SERVICE_FILE="/etc/init.d/argo"
         elif command -v systemctl >/dev/null 2>&1; then
             SYSTEM="systemd"
-            SERVICE_FILE="/etc/systemd/system/argo.service"   # 简化
+            SERVICE_FILE="/etc/systemd/system/argo.service"
         else
             SYSTEM="unknown"
         fi
@@ -93,15 +93,15 @@ LOCAL_SERVICE="$LOCAL_SERVICE"
 EOF
 }
 
-# 生成服务文件
+# 生成服务文件（默认添加 --protocol http2）
 generate_service() {
     local CMD=""
     if [ "$TUNNEL_TYPE" = "try" ]; then
-        CMD="$CF_BIN tunnel --edge-ip-version auto --no-autoupdate --url $LOCAL_SERVICE"
+        CMD="$CF_BIN tunnel --edge-ip-version auto --protocol http2 --no-autoupdate --url $LOCAL_SERVICE"
     elif [ "$TUNNEL_TYPE" = "token" ]; then
-        CMD="$CF_BIN tunnel --edge-ip-version auto run --token $ARGO_TOKEN"
+        CMD="$CF_BIN tunnel --edge-ip-version auto --protocol http2 run --token $ARGO_TOKEN"
     elif [ "$TUNNEL_TYPE" = "json" ] || [ "$TUNNEL_TYPE" = "api" ]; then
-        CMD="$CF_BIN tunnel --edge-ip-version auto --config $TUNNEL_YML run"
+        CMD="$CF_BIN tunnel --edge-ip-version auto --protocol http2 --config $TUNNEL_YML run"
     else
         echo -e "${RED}未知隧道类型${NC}"
         return 1
@@ -110,7 +110,7 @@ generate_service() {
     if [ "$SYSTEM" = "systemd" ]; then
         cat > "$SERVICE_FILE" <<EOF
 [Unit]
-Description=Argo Tunnel
+Description=Argo Tunnel (HTTP/2)
 After=network.target
 
 [Service]
@@ -131,7 +131,7 @@ EOF
 #!/sbin/openrc-run
 
 name="argo"
-description="Cloudflare Tunnel"
+description="Cloudflare Tunnel (HTTP/2)"
 
 command="${CF_BIN}"
 command_args="${CMD#*$CF_BIN }"
@@ -221,7 +221,7 @@ get_domain() {
 
 # 交互安装
 interactive_install() {
-    echo -e "${YELLOW}===== 安装 Argo 隧道 =====${NC}"
+    echo -e "${YELLOW}===== 安装 Argo 隧道 (HTTP/2) =====${NC}"
     read -p "本地服务地址 (默认 http://localhost:8080): " LOCAL_SERVICE
     LOCAL_SERVICE=${LOCAL_SERVICE:-"http://localhost:8080"}
 
@@ -376,7 +376,7 @@ usage() {
 用法: argo [选项]    (或直接运行本脚本)
 
 选项:
-  -i         安装/重新配置（自动创建全局 argo 命令）
+  -i         安装/重新配置（默认 HTTP/2 协议）
   -s         启动隧道
   -t         停止隧道
   -r         重启隧道
@@ -393,7 +393,7 @@ EOF
 # 主菜单
 menu() {
     clear
-    echo -e "${YELLOW}===== Argo Tunnel 管理 =====${NC}"
+    echo -e "${YELLOW}===== Argo Tunnel 管理 (HTTP/2) =====${NC}"
     echo "1. 安装/配置"
     echo "2. 启动"
     echo "3. 停止"
